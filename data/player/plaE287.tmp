@@ -1,0 +1,97 @@
+[gd_scene load_steps=11 format=3 uid="uid://cwiu8nsyij4gn"]
+
+[ext_resource type="Script" path="res://data/player/player.gd" id="1_u1w3t"]
+[ext_resource type="Texture2D" uid="uid://bubwl36108v2r" path="res://data/cursors/crosshair001.png" id="2_nq3sk"]
+
+[sub_resource type="Animation" id="Animation_saxjg"]
+resource_name = "head_bob"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.239392, 1, 0, -0.1, 0, 0.5, 1, 0, 0, 0)
+
+[sub_resource type="Animation" id="Animation_1m4wq"]
+resource_name = "reset"
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0.00870516, 1, 0, 0, 0)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_36ogt"]
+_data = {
+"head_bob": SubResource("Animation_saxjg"),
+"reset": SubResource("Animation_1m4wq")
+}
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_phygr"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ov6h1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qatiu"]
+albedo_color = Color(1, 0.345098, 0.207843, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_3oyv7"]
+material = SubResource("StandardMaterial3D_qatiu")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_byg5p"]
+size = Vector3(0.05, 0.450959, 0.1)
+
+[node name="player" type="CharacterBody3D"]
+script = ExtResource("1_u1w3t")
+crouch_enabled = false
+
+[node name="head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="camera" type="Camera3D" parent="head"]
+
+[node name="camera_animation" type="AnimationPlayer" parent="head/camera"]
+libraries = {
+"": SubResource("AnimationLibrary_36ogt")
+}
+
+[node name="collision" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_phygr")
+
+[node name="hud_camera" type="Camera2D" parent="."]
+
+[node name="crosshair" type="Sprite2D" parent="hud_camera"]
+modulate = Color(0, 0, 0, 0.941176)
+material = SubResource("CanvasItemMaterial_ov6h1")
+texture = ExtResource("2_nq3sk")
+
+[node name="body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000221729, 0.00488645, 0.00130415)
+mesh = SubResource("CapsuleMesh_3oyv7")
+
+[node name="crouch_roof_detect" type="RayCast3D" parent="."]
+target_position = Vector3(0, 1, 0)
+
+[node name="stick" type="CharacterBody3D" parent="."]
+transform = Transform3D(-4.37114e-08, -0.34202, -0.939692, 0, 0.939692, -0.34202, 1, -1.49502e-08, -4.10752e-08, 0, -0.5, -1)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CSGBox3D" type="CSGBox3D" parent="stick"]
+transform = Transform3D(1.00001, -2.23516e-08, 5.66239e-07, 2.23518e-08, 1, -2.98024e-08, -5.66245e-07, 2.98024e-08, 1, 0, 0, 0)
+size = Vector3(0.05, 1, 0.1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="stick"]
+transform = Transform3D(1, 2.23516e-07, -1.19211e-07, -2.23517e-07, 1, -1.00937e-05, 1.19209e-07, 1.00937e-05, 1, -2.98023e-07, 0.191502, 2.38419e-07)
+shape = SubResource("BoxShape3D_byg5p")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="stick"]
+transform = Transform3D(1, 6.73682e-08, 5.7062e-08, 3.05797e-08, 0.342024, -0.939694, -8.2821e-08, 0.939704, 0.342021, 0, -0.529287, -0.178532)
+size = Vector3(0.05, 0.445862, 0.1)
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="stick"]
+transform = Transform3D(1, 1.99715e-06, 8.19103e-07, 8.66385e-08, 0.34202, -0.939693, -2.15686e-06, 0.939693, 0.34202, 0, -0.528899, -0.17786)
+shape = SubResource("BoxShape3D_byg5p")

@@ -1,0 +1,132 @@
+[gd_scene load_steps=14 format=3 uid="uid://cwiu8nsyij4gn"]
+
+[ext_resource type="Script" path="res://data/scripts/player.gd" id="1_sfw15"]
+[ext_resource type="Texture2D" uid="uid://bubwl36108v2r" path="res://data/cursors/crosshair001.png" id="2_nq3sk"]
+[ext_resource type="Texture2D" uid="uid://crrq3sken6nto" path="res://textures/i.png" id="3_f1yif"]
+
+[sub_resource type="Animation" id="Animation_saxjg"]
+resource_name = "head_bob"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.239392, 1, 0, -0.1, 0, 0.5, 1, 0, 0, 0)
+
+[sub_resource type="Animation" id="Animation_1m4wq"]
+resource_name = "reset"
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0.00870516, 1, 0, 0, 0)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_36ogt"]
+_data = {
+"head_bob": SubResource("Animation_saxjg"),
+"reset": SubResource("Animation_1m4wq")
+}
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_phygr"]
+radius = 0.3
+height = 1.5
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ov6h1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qatiu"]
+albedo_texture = ExtResource("3_f1yif")
+uv1_offset = Vector3(0.5, 0, 0)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_3oyv7"]
+material = SubResource("StandardMaterial3D_qatiu")
+radius = 0.3
+height = 1.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kdomh"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_byg5p"]
+size = Vector3(0.05, 0.45, 0.1)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8xurf"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("head/camera:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("stick:position")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("stick:rotation")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath("body:rotation")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+
+[node name="player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1_sfw15")
+
+[node name="head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="camera" type="Camera3D" parent="head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+
+[node name="camera_animation" type="AnimationPlayer" parent="head/camera"]
+libraries = {
+"": SubResource("AnimationLibrary_36ogt")
+}
+
+[node name="collision body" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_phygr")
+
+[node name="hud_camera" type="Camera2D" parent="."]
+
+[node name="crosshair" type="Sprite2D" parent="hud_camera"]
+modulate = Color(0, 0, 0, 0.941176)
+material = SubResource("CanvasItemMaterial_ov6h1")
+texture = ExtResource("2_nq3sk")
+
+[node name="body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000221729, 0.00488645, 0.00130415)
+mesh = SubResource("CapsuleMesh_3oyv7")
+
+[node name="crouch_roof_detect" type="RayCast3D" parent="."]
+target_position = Vector3(0, 1, 0)
+
+[node name="stick" type="CharacterBody3D" parent="."]
+transform = Transform3D(-4.36515e-08, -2.28768e-09, -0.999999, -0.052336, 0.998629, 0, 0.99863, 0.0523359, -4.37114e-08, 0, -0.165, -0.534)
+collision_layer = 2
+collision_mask = 3
+collision_priority = 1000.0
+
+[node name="stick handle" type="CSGBox3D" parent="stick"]
+transform = Transform3D(1.00001, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, -0.121, 0.251)
+use_collision = true
+collision_layer = 2
+collision_mask = 3
+size = Vector3(0.05, 1, 0.1)
+material = SubResource("StandardMaterial3D_kdomh")
+
+[node name="stick base" type="CSGBox3D" parent="stick"]
+transform = Transform3D(1, 0, 0, 0, -4.37119e-08, -1, 0, 1.00001, -4.37115e-08, 0, -0.529287, -0.178532)
+size = Vector3(0.05, 0.445862, 0.1)
+material = SubResource("StandardMaterial3D_kdomh")
+
+[node name="stick base hb" type="CollisionShape3D" parent="stick"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.528899, -0.17786)
+shape = SubResource("BoxShape3D_byg5p")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_8xurf")

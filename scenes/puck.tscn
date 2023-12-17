@@ -1,0 +1,54 @@
+[gd_scene load_steps=7 format=3 uid="uid://b2goh4jnuim3h"]
+
+[ext_resource type="Script" path="res://data/scripts/Puck.gd" id="1_2yd68"]
+[ext_resource type="Texture2D" uid="uid://boc36leepmtja" path="res://textures/puck texture.png" id="2_5ux7i"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_oaoag"]
+friction = 0.08
+bounce = 0.25
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_23ijk"]
+albedo_texture = ExtResource("2_5ux7i")
+uv1_scale = Vector3(4, 4, 4)
+uv1_offset = Vector3(0.5, 0, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_yaqet"]
+height = 0.15
+radius = 0.175
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ey80g"]
+properties/0/path = NodePath("Puck:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Puck:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="PuckScene" type="Node3D"]
+
+[node name="Puck" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+collision_layer = 4
+collision_mask = 7
+collision_priority = 1000.0
+mass = 0.17
+physics_material_override = SubResource("PhysicsMaterial_oaoag")
+continuous_cd = true
+max_contacts_reported = 1
+contact_monitor = true
+script = ExtResource("1_2yd68")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Puck"]
+radius = 0.15
+height = 0.1
+sides = 64
+material = SubResource("StandardMaterial3D_23ijk")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Puck"]
+shape = SubResource("CylinderShape3D_yaqet")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_ey80g")
+
+[connection signal="body_entered" from="Puck" to="Puck" method="_on_body_entered"]
